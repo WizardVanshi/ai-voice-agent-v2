@@ -47,7 +47,7 @@ It supports multiple **Doraemon-themed personas** (Doraemon, Nobita, Shizuka, Gi
 
 1. **Start the FastAPI server**
    ```bash
-   uvicorn assembly2:app --reload
+   uvicorn main:app --reload
    ```
 
 2. **Open the UI**  
@@ -59,7 +59,7 @@ It supports multiple **Doraemon-themed personas** (Doraemon, Nobita, Shizuka, Gi
 ```
 .
 ├── index.html         # Frontend UI
-├── assembly2.py       # FastAPI backend (personas, websocket, actions)
+├── main.py       # FastAPI backend (personas, websocket, actions)
 ├── requirements.txt   # Python dependencies
 ├── README.md          # Documentation
 └── .env               # API keys (ignored by git)

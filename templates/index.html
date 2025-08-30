@@ -235,6 +235,7 @@
             font-weight: 500;
             margin-bottom: 15px;
             min-height: 20px;
+            text-align: center;
         }
 
         #record-btn {
@@ -255,12 +256,9 @@
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: scale(1);
             }
-
             50% {
                 transform: scale(1.05);
             }
@@ -277,14 +275,17 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 20px;
         }
 
         .modal-content {
             background: white;
             padding: 30px;
             border-radius: 15px;
-            width: 90%;
+            width: 100%;
             max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h2 {
@@ -306,6 +307,7 @@
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
+            font-size: 16px; /* Prevents zoom on iOS */
         }
 
         .modal-content button {
@@ -318,12 +320,324 @@
             font-size: 1rem;
             cursor: pointer;
         }
+
+        /* Mobile-specific styles */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        /* Tablet Styles */
+        @media screen and (max-width: 1024px) and (min-width: 769px) {
+            .container {
+                grid-template-columns: 280px 1fr;
+                gap: 20px;
+                height: 95vh;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .panel-header {
+                font-size: 1.3rem;
+                margin-bottom: 16px;
+            }
+            
+            #persona-selector button,
+            .actions-panel button {
+                padding: 10px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Mobile Styles */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                gap: 0;
+                height: 100vh;
+                max-height: none;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .left-panel {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg-color);
+                z-index: 99;
+                padding: 80px 20px 20px 20px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+            }
+
+            .left-panel.open {
+                transform: translateX(0);
+            }
+
+            .left-panel-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 98;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+
+            .left-panel-overlay.open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .panel {
+                margin-bottom: 16px;
+            }
+
+            .right-panel {
+                border-radius: 0;
+                height: 100vh;
+            }
+
+            .chat-header {
+                padding: 15px 20px;
+            }
+
+            .chat-header h2 {
+                font-size: 1.3rem;
+            }
+
+            #conversation-messages {
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .message {
+                max-width: 85%;
+                font-size: 0.95rem;
+            }
+
+            .chat-footer {
+                padding: 16px;
+            }
+
+            #main-status {
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+            }
+
+            #record-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            /* Horizontal persona selector on mobile */
+            #persona-selector {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            #persona-selector button {
+                flex: 1;
+                min-width: calc(50% - 4px);
+                margin-bottom: 8px;
+                padding: 10px 8px;
+                font-size: 0.85rem;
+                text-align: center;
+            }
+
+            .actions-panel button {
+                padding: 14px;
+                margin-bottom: 12px;
+                font-size: 1rem;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .modal-content h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Small Mobile Styles */
+        @media screen and (max-width: 480px) {
+            .left-panel {
+                width: 100%;
+                padding: 80px 15px 20px 15px;
+            }
+
+            .chat-header {
+                padding: 12px 15px;
+            }
+
+            .chat-header h2 {
+                font-size: 1.2rem;
+            }
+
+            #conversation-messages {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .message {
+                max-width: 90%;
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+
+            .chat-footer {
+                padding: 12px;
+            }
+
+            #record-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.6rem;
+            }
+
+            #persona-selector button {
+                min-width: 100%;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 15px;
+            }
+
+            .panel-header {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Landscape Mobile */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .container {
+                height: 100vh;
+            }
+
+            .chat-footer {
+                padding: 10px;
+            }
+
+            #main-status {
+                margin-bottom: 8px;
+                font-size: 0.85rem;
+            }
+
+            #record-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .panel {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            button {
+                min-height: 44px; /* iOS recommended touch target size */
+            }
+
+            #persona-selector button,
+            .actions-panel button {
+                min-height: 48px;
+            }
+
+            .message.assistant .play-pause-btn {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            @keyframes pulse {
+                0%, 100% {
+                    transform: scale(1);
+                }
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        button:focus,
+        input:focus {
+            outline: 2px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #000000;
+                --panel-bg: #1C1C1E;
+                --text-dark: #FFFFFF;
+                --text-light: #8E8E93;
+                --border-color: #38383A;
+            }
+
+            .message.assistant {
+                background-color: #2C2C2E;
+                color: var(--text-dark);
+            }
+
+            .modal-content {
+                background: var(--panel-bg);
+                color: var(--text-dark);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <button class="mobile-toggle" id="mobile-toggle">☰</button>
+    <div class="left-panel-overlay" id="left-panel-overlay"></div>
+
     <div class="container">
-        <div class="left-panel">
+        <div class="left-panel" id="left-panel">
             <div class="panel persona-panel">
                 <div class="panel-header">🎭 Personas</div>
                 <div id="persona-selector"></div>
@@ -381,6 +695,9 @@
         const geminiKeyInput = document.getElementById('gemini-key');
         const murfKeyInput = document.getElementById('murf-key');
         const newsKeyInput = document.getElementById('news-key');
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const leftPanel = document.getElementById('left-panel');
+        const leftPanelOverlay = document.getElementById('left-panel-overlay');
 
         // State
         let socket;
@@ -398,6 +715,27 @@
             suneo: { avatar: '😎', name: 'Suneo' }
         };
 
+        // Mobile menu functionality
+        mobileToggle.addEventListener('click', toggleMobileMenu);
+        leftPanelOverlay.addEventListener('click', closeMobileMenu);
+
+        function toggleMobileMenu() {
+            leftPanel.classList.toggle('open');
+            leftPanelOverlay.classList.toggle('open');
+        }
+
+        function closeMobileMenu() {
+            leftPanel.classList.remove('open');
+            leftPanelOverlay.classList.remove('open');
+        }
+
+        // Close mobile menu when persona or action is selected
+        function closeMobileMenuOnAction() {
+            if (window.innerWidth <= 768) {
+                closeMobileMenu();
+            }
+        }
+
         // --- Initialization ---
         window.addEventListener('load', async () => {
             loadApiKeys();
@@ -412,13 +750,23 @@
             }
         });
 
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
+
         // --- API Key Management ---
         function loadApiKeys() {
+            // Note: In production, consider using a more secure storage method
+            const storage = window.sessionStorage || {}; // Fallback for environments without sessionStorage
+            
             apiKeys = {
-                assembly: localStorage.getItem('assembly-key') || '',
-                gemini: localStorage.getItem('gemini-key') || '',
-                murf: localStorage.getItem('murf-key') || '',
-                news: localStorage.getItem('news-key') || '',
+                assembly: storage.getItem?.('assembly-key') || '',
+                gemini: storage.getItem?.('gemini-key') || '',
+                murf: storage.getItem?.('murf-key') || '',
+                news: storage.getItem?.('news-key') || '',
             };
             assemblyKeyInput.value = apiKeys.assembly;
             geminiKeyInput.value = apiKeys.gemini;
@@ -433,10 +781,15 @@
                 murf: murfKeyInput.value.trim(),
                 news: newsKeyInput.value.trim(),
             };
-            localStorage.setItem('assembly-key', apiKeys.assembly);
-            localStorage.setItem('gemini-key', apiKeys.gemini);
-            localStorage.setItem('murf-key', apiKeys.murf);
-            localStorage.setItem('news-key', apiKeys.news);
+            
+            // Store in memory and optionally in sessionStorage if available
+            const storage = window.sessionStorage || {};
+            if (storage.setItem) {
+                storage.setItem('assembly-key', apiKeys.assembly);
+                storage.setItem('gemini-key', apiKeys.gemini);
+                storage.setItem('murf-key', apiKeys.murf);
+                storage.setItem('news-key', apiKeys.news);
+            }
         }
 
         function areKeysSet() {
@@ -471,7 +824,10 @@
                 const button = document.createElement('button');
                 button.className = id === currentPersona ? 'active' : '';
                 button.textContent = `${config.avatar} ${config.name}`;
-                button.onclick = () => changePersona(id);
+                button.onclick = () => {
+                    changePersona(id);
+                    closeMobileMenuOnAction();
+                };
                 personaSelector.appendChild(button);
             });
         }
@@ -534,9 +890,18 @@
         }
 
         // Event listeners for action buttons
-        greetingBtn.addEventListener('click', () => performAction('/api/persona/greeting'));
-        comedyBtn.addEventListener('click', () => performAction('/api/persona/standup'));
-        newsBtn.addEventListener('click', () => performAction('/api/persona/news'));
+        greetingBtn.addEventListener('click', () => {
+            performAction('/api/persona/greeting');
+            closeMobileMenuOnAction();
+        });
+        comedyBtn.addEventListener('click', () => {
+            performAction('/api/persona/standup');
+            closeMobileMenuOnAction();
+        });
+        newsBtn.addEventListener('click', () => {
+            performAction('/api/persona/news');
+            closeMobileMenuOnAction();
+        });
 
         // --- UI & Messaging ---
         function addMessage(content, type, metadata = {}) {

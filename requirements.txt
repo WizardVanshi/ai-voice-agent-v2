@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+websockets
+assemblyai
+google-generativeai
+python-dotenv
+requests
+jinja2
+murf   # optional, but used for TTS

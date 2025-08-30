@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 Voice Agent with Personas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #F0F4F8;
+            --panel-bg: #FFFFFF;
+            --primary-blue: #007AFF;
+            --text-dark: #1C1C1E;
+            --text-light: #8A8A8E;
+            --border-color: #E5E5EA;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Fredoka One', cursive;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 800px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #persona-selector button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        #persona-selector button:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        #persona-selector button.active {
+            background-color: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .actions-panel button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #greeting-btn {
+            background-color: #34C759;
+            color: white;
+        }
+
+        #comedy-btn {
+            background-color: #FF9500;
+            color: white;
+        }
+
+        #news-btn {
+            background-color: #5856D6;
+            color: white;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            background: var(--panel-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+        }
+
+        .chat-header #settings-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        #conversation-messages {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-container.user {
+            align-items: flex-end;
+        }
+
+        .message-container.assistant {
+            align-items: flex-start;
+        }
+
+        .message-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+            padding: 0 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background-color: var(--primary-blue);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            background-color: #EFEFF4;
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.assistant .audio-controls {
+            margin-top: 10px;
+        }
+
+        .message.assistant .play-pause-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #main-status {
+            font-weight: 500;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        #record-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            background-color: #34C759;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #record-btn.recording {
+            background-color: #FF3B30;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content .input-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-blue);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="panel persona-panel">
+                <div class="panel-header">🎭 Personas</div>
+                <div id="persona-selector"></div>
+            </div>
+            <div class="panel actions-panel">
+                <div class="panel-header">⚡ Actions</div>
+                <button id="greeting-btn">🎵 Play Greeting</button>
+                <button id="comedy-btn">🎤 Standup Comedy</button>
+                <button id="news-btn">📰 Latest News</button>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <header class="chat-header">
+                <h2>Live Conversation</h2>
+                <button id="settings-btn">⚙️</button>
+            </header>
+            <div id="conversation-messages"></div>
+            <footer class="chat-footer">
+                <div id="main-status">Enter your API keys to begin</div>
+                <button id="record-btn" disabled>🎙️</button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="api-key-modal">
+        <div class="modal-content">
+            <h2>API Configuration</h2>
+            <p style="margin-bottom: 20px; color: var(--text-light);">Enter your API keys to use the voice agent.</p>
+            <div class="input-group"><label for="assembly-key">AssemblyAI API Key</label><input type="password"
+                    id="assembly-key"></div>
+            <div class="input-group"><label for="gemini-key">Google Gemini API Key</label><input type="password"
+                    id="gemini-key"></div>
+            <div class="input-group"><label for="murf-key">Murf.ai API Key</label><input type="password" id="murf-key">
+            </div>
+            <div class="input-group"><label for="news-key">NewsAPI.org API Key</label><input type="password"
+                    id="news-key"></div>
+            <button id="save-keys-btn">Save and Start</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const recordBtn = document.getElementById('record-btn');
+        const mainStatus = document.getElementById('main-status');
+        const conversationMessages = document.getElementById('conversation-messages');
+        const personaSelector = document.getElementById('persona-selector');
+        const greetingBtn = document.getElementById('greeting-btn');
+        const comedyBtn = document.getElementById('comedy-btn');
+        const newsBtn = document.getElementById('news-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const apiKeyModal = document.getElementById('api-key-modal');
+        const saveKeysBtn = document.getElementById('save-keys-btn');
+        const assemblyKeyInput = document.getElementById('assembly-key');
+        const geminiKeyInput = document.getElementById('gemini-key');
+        const murfKeyInput = document.getElementById('murf-key');
+        const newsKeyInput = document.getElementById('news-key');
+
+        // State
+        let socket;
+        let mediaRecorder;
+        let isRecording = false;
+        let currentPersona = 'doraemon';
+        let apiKeys = {};
+        let currentAudio = null;
+
+        const personaConfig = {
+            doraemon: { avatar: '🤖', name: 'Doraemon' },
+            nobita: { avatar: '👦', name: 'Nobita Nobi' },
+            shizuka: { avatar: '👧', name: 'Shizuka' },
+            gian: { avatar: '💪', name: 'Gian' },
+            suneo: { avatar: '😎', name: 'Suneo' }
+        };
+
+        // --- Initialization ---
+        window.addEventListener('load', async () => {
+            loadApiKeys();
+            await loadAvailablePersonas();
+            setupPersonaSelector();
+
+            if (!areKeysSet()) {
+                apiKeyModal.style.display = 'flex';
+            } else {
+                mainStatus.textContent = 'Ready to talk';
+                recordBtn.disabled = false;
+            }
+        });
+
+        // --- API Key Management ---
+        function loadApiKeys() {
+            apiKeys = {
+                assembly: localStorage.getItem('assembly-key') || '',
+                gemini: localStorage.getItem('gemini-key') || '',
+                murf: localStorage.getItem('murf-key') || '',
+                news: localStorage.getItem('news-key') || '',
+            };
+            assemblyKeyInput.value = apiKeys.assembly;
+            geminiKeyInput.value = apiKeys.gemini;
+            murfKeyInput.value = apiKeys.murf;
+            newsKeyInput.value = apiKeys.news;
+        }
+
+        function saveApiKeys() {
+            apiKeys = {
+                assembly: assemblyKeyInput.value.trim(),
+                gemini: geminiKeyInput.value.trim(),
+                murf: murfKeyInput.value.trim(),
+                news: newsKeyInput.value.trim(),
+            };
+            localStorage.setItem('assembly-key', apiKeys.assembly);
+            localStorage.setItem('gemini-key', apiKeys.gemini);
+            localStorage.setItem('murf-key', apiKeys.murf);
+            localStorage.setItem('news-key', apiKeys.news);
+        }
+
+        function areKeysSet() {
+            return apiKeys.assembly && apiKeys.gemini && apiKeys.murf && apiKeys.news;
+        }
+
+        saveKeysBtn.addEventListener('click', () => {
+            saveApiKeys();
+            if (areKeysSet()) {
+                apiKeyModal.style.display = 'none';
+                mainStatus.textContent = 'Ready to talk';
+                recordBtn.disabled = false;
+            } else {
+                alert('Please fill in all API keys.');
+            }
+        });
+        settingsBtn.addEventListener('click', () => apiKeyModal.style.display = 'flex');
+
+        // --- Persona Management ---
+        async function loadAvailablePersonas() {
+            try {
+                const response = await fetch('/api/personas');
+                const data = await response.json();
+                currentPersona = data.current_persona;
+            } catch (error) { console.error('Error loading personas:', error); }
+        }
+
+        function setupPersonaSelector() {
+            personaSelector.innerHTML = '';
+            Object.keys(personaConfig).forEach(id => {
+                const config = personaConfig[id];
+                const button = document.createElement('button');
+                button.className = id === currentPersona ? 'active' : '';
+                button.textContent = `${config.avatar} ${config.name}`;
+                button.onclick = () => changePersona(id);
+                personaSelector.appendChild(button);
+            });
+        }
+
+        async function changePersona(id) {
+            try {
+                const response = await fetch(`/api/persona/${id}`, { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    currentPersona = id;
+                    setupPersonaSelector();
+                    addMessage(`Switched to ${data.name}!`, 'system');
+                }
+            } catch (error) { console.error('Error changing persona:', error); }
+        }
+
+        // --- Actions (Option 2: always POST with keys + persona) ---
+        async function performAction(url) {
+            if (!areKeysSet()) {
+                apiKeyModal.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const requestBody = {
+                    api_keys: apiKeys,
+                    persona_id: currentPersona
+                };
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${errorText}`);
+                }
+
+                const data = await res.json();
+
+                if (data.success) {
+                    let text = '';
+                    if (data.greeting) text = data.greeting;
+                    else if (data.joke) text = data.joke;
+                    else if (data.news) text = data.news;
+                    else text = 'Action completed successfully';
+
+                    addMessage(text, 'assistant', {
+                        audio: data.audio,
+                        persona: data.persona || currentPersona
+                    });
+                } else {
+                    addMessage(`Error: ${data.error || 'Action failed.'}`, 'system');
+                }
+            } catch (err) {
+                addMessage(`Network error: ${err.message}`, 'system');
+            }
+        }
+
+        // Event listeners for action buttons
+        greetingBtn.addEventListener('click', () => performAction('/api/persona/greeting'));
+        comedyBtn.addEventListener('click', () => performAction('/api/persona/standup'));
+        newsBtn.addEventListener('click', () => performAction('/api/persona/news'));
+
+        // --- UI & Messaging ---
+        function addMessage(content, type, metadata = {}) {
+            if (!content) return;
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const persona = metadata.persona ? personaConfig[metadata.persona] : personaConfig[currentPersona];
+
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container ${type}`;
+
+            let metaHTML = (type === 'user') ? `<div class="message-meta">You · ${timestamp}</div>` :
+                (type === 'assistant') ? `<div class="message-meta">${persona.name} · ${timestamp}</div>` : '';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = content;
+
+            if (type === 'assistant' && metadata.audio) {
+                const audioControls = document.createElement('div');
+                audioControls.className = 'audio-controls';
+                const playBtn = document.createElement('button');
+                playBtn.className = 'play-pause-btn';
+                playBtn.innerHTML = '▶️';
+                audioControls.appendChild(playBtn);
+                messageDiv.appendChild(audioControls);
+
+                playBtn.onclick = () => playAudio(metadata.audio, playBtn);
+                // Auto-play
+                playAudio(metadata.audio, playBtn);
+            }
+
+            messageContainer.innerHTML = metaHTML;
+            messageContainer.appendChild(messageDiv);
+
+            conversationMessages.appendChild(messageContainer);
+            conversationMessages.scrollTop = conversationMessages.scrollHeight;
+        }
+
+        // --- Audio Handling ---
+        async function playAudio(base64Audio, btn) {
+            if (currentAudio && currentAudio.isPlaying) {
+                currentAudio.source.stop();
+                currentAudio.button.innerHTML = '▶️';
+                if (currentAudio.button === btn) { currentAudio = null; return; }
+            }
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const audioData = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0)).buffer;
+                const audioBuffer = await audioContext.decodeAudioData(audioData);
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start();
+                btn.innerHTML = '⏸️';
+                currentAudio = { source, button: btn, isPlaying: true };
+                source.onended = () => {
+                    btn.innerHTML = '▶️';
+                    if (currentAudio && currentAudio.button === btn) currentAudio = null;
+                };
+            } catch (error) { console.error('Error playing audio:', error); }
+        }
+
+        // --- Recording & WebSocket ---
+        recordBtn.addEventListener('click', () => isRecording ? stopRecording() : startRecording());
+
+        async function startRecording() {
+            if (!areKeysSet()) { apiKeyModal.style.display = 'flex'; return; }
+            isRecording = true;
+            recordBtn.classList.add('recording');
+            recordBtn.innerHTML = '⏹️';
+            mainStatus.textContent = 'Connecting...';
+            initWebSocket();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioContext = new AudioContext({ sampleRate: 16000 });
+                const source = audioContext.createMediaStreamSource(stream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+                processor.onaudioprocess = (e) => {
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        const inputData = e.inputBuffer.getChannelData(0);
+                        const pcmData = new Int16Array(inputData.length);
+                        for (let i = 0; i < inputData.length; i++) { pcmData[i] = inputData[i] * 32767; }
+                        socket.send(pcmData.buffer);
+                    }
+                };
+                mediaRecorder = { stream, processor, audioContext };
+            } catch (err) {
+                console.error('Error starting recording:', err);
+                mainStatus.textContent = 'Could not access microphone.';
+                stopRecording();
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            recordBtn.classList.remove('recording');
+            recordBtn.innerHTML = '🎙️';
+            mainStatus.textContent = 'Ready to talk';
+            if (mediaRecorder) {
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                mediaRecorder.processor.disconnect();
+                mediaRecorder.audioContext.close();
+                mediaRecorder = null;
+            }
+            if (socket) { socket.close(); socket = null; }
+        }
+
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
+            socket.onopen = () => socket.send(JSON.stringify({ type: 'config', api_keys: apiKeys }));
+            socket.onclose = () => { if (isRecording) stopRecording(); };
+            socket.onerror = (error) => { console.error('WebSocket error:', error); if (isRecording) stopRecording(); };
+            socket.onmessage = (event) => handleWebSocketMessage(JSON.parse(event.data));
+        }
+
+        function handleWebSocketMessage(message) {
+            switch (message.type) {
+                case 'config_success':
+                    mainStatus.textContent = '🎙️ Listening...';
+                    break;
+                case 'processing_started':
+                    mainStatus.textContent = '🤔 Thinking...';
+                    addMessage(message.text, 'user');
+                    break;
+                case 'assistant_response':
+                    mainStatus.textContent = '🎙️ Listening...';
+                    addMessage(message.text, 'assistant', { audio: message.audio, persona: message.persona });
+                    break;
+                case 'error':
+                case 'assembly_error':
+                    addMessage(`Error: ${message.message || message.error}`, 'system');
+                    stopRecording();
+                    break;
+            }
+        }
+    </script>
+</body>
+
+</html>
